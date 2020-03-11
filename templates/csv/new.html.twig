@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block main %}
+    <!-- Default form login -->
+
+            <div class="text-center border border-light p-5 col-6  mt-3">
+                {{ form_start(form) }}
+                <p class="h4 mb-4">Upload CSV</p>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                    </div>
+                    <div class="custom-file">
+                        {{ form_row(form.csv,{
+                            'attr': {'class': 'custom-file-input'},
+                            'label': ' ',
+                            'label_attr': {'class': 'custom-file-label'}
+                        }) }}
+                    </div>
+                </div>
+                {{ form_row(form.submit,  {
+                    'attr': {'class': 'btn btn-info btn-block my-4'}
+                }) }}
+            </div>
+    {{ form_end(form) }}
+{% endblock %}
