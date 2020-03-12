@@ -9,7 +9,6 @@ use Doctrine\ORM\QueryBuilder;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use phpDocumentor\Reflection\Types\Array_;
-use Psr\Log\LoggerInterface;
 
 class CsvService
 {
@@ -40,7 +39,6 @@ class CsvService
 	public function __construct($targetDirectory)
 	{
 		$this->targetDirectory = $targetDirectory;
-		$this->logger = $logger;
 	}
 
 	public function setFileName($filename)

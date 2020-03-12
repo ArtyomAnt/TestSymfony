@@ -23,7 +23,6 @@ class CsvController extends AbstractController
 		$csvObject = new Csv();
 		$form = $this->createForm(CsvType::class, $csvObject);
 		$form->handleRequest($request);
-
 		if ($request->isMethod('POST')) {
 			if ($form->isSubmitted() && $form->isValid()) {
 				$csvFilename = $form->get('csv')->getData();
