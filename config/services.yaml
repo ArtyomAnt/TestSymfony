@@ -29,7 +29,5 @@ services:
         arguments:
             $targetDirectory: '%csv_directory%'
     App\Service\CsvService:
-        arguments:
-            $targetDirectory: '%csv_directory%'
-        calls:
-            - setEntityManager: ['@doctrine.orm.default_entity_manager']
+        autowire: true
+        class: App\Service\CsvService

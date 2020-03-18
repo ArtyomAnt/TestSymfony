@@ -40,6 +40,13 @@ class CsvRepository extends ServiceEntityRepository
 		}
 	}
 
+	/**
+	 * @param $tableName
+	 * @param $records
+	 * @param $typeFinish
+	 * @return mixed
+	 * @throws \Doctrine\DBAL\DBALException
+	 */
 	public function insertData($tableName, $records, $typeFinish)
 	{
 		foreach ($records as $row) {

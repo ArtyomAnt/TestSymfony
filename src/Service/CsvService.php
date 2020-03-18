@@ -2,75 +2,86 @@
 
 namespace App\Service;
 
-use App\Entity\Csv;
 use App\Repository\CsvRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\QueryBuilder;
 use League\Csv\Reader;
 use League\Csv\Statement;
-use phpDocumentor\Reflection\Types\Array_;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CsvService
 {
 	/**
 	 * @var string
 	 */
-	private $targetDirectory;
-
-	/**
-	 * @var string
-	 */
 	private $filename;
+	/**
+	 * @var CsvRepository
+	 */
+	private $csvRepository;
 
 	/**
-	 * @var EntityManager
+	 * @var array
 	 */
-	private $entityManager;
-
-
+	private $headers;
 
 	/**
-	 * CsvImportCommand constructor.
-	 *
-	 * @param string $targetDirectory
-	 *
-	 * @throws \Symfony\Component\Console\Exception\LogicException
+	 * @var ContainerInterface
 	 */
-	public function __construct($targetDirectory)
+	private $container;
+
+
+	public function __construct(CsvRepository $csvRepository, ContainerInterface $container)
 	{
-		$this->targetDirectory = $targetDirectory;
+		$this->csvRepository = $csvRepository;
+		$this->container = $container;
 	}
 
+	/**
+	 * @param $targetDirectory
+	 * @param $filename
+	 * @return \League\Csv\TabularDataReader
+	 * @throws \League\Csv\Exception
+	 */
+	public function parse($targetDirectory,$filename)
+	{
+		$csv = Reader::createFromPath($targetDirectory . $filename);
+		$csv->setHeaderOffset(0);
+		$stmt = (new Statement())
+			->offset(0);
+		$records = $stmt->process($csv);
+		$this->headers = $records->getHeader();
+		return $records;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFileName()
+	{
+		return $this->filename;
+	}
+
+	/**
+	 * @param string $filename
+	 */
 	public function setFileName($filename)
 	{
 		$this->filename = $filename;
 	}
 
-	public function parse()
+	/**
+	 * @param string $filename
+	 * @return string
+	 */
+	public function getTableName($filename)
 	{
-		$csv = Reader::createFromPath($this->targetDirectory . $this->filename);
-		$csv->setHeaderOffset(0);
-		$stmt = (new Statement())
-			->offset(0);
-		$records = $stmt->process($csv);
-		$em = $this->entityManager;
-		$headers = $records->getHeader();
-		$tableName = pathinfo($this->filename, PATHINFO_FILENAME);
-		$repository = $em->getRepository(Csv::class);
-		$repository
-			->createTable($tableName, $headers);
-		$typeStart = array_fill_keys($headers, 'integer');
-		$typeFinish = $typeStart;
-		$typeFinish = $repository
-			->insertData($tableName, $records, $typeFinish);
-		$field_dif = array_keys(array_intersect_assoc($typeStart,$typeFinish));
-		$repository
-			->updateFields($field_dif,$tableName);
+		return pathinfo($filename, PATHINFO_FILENAME);
 	}
 
-	public function setEntityManager(EntityManager $entityManager)
+	/**
+	 * @return array
+	 */
+	public function getHeaders()
 	{
-		$this->entityManager = $entityManager;
+		return $this->headers;
 	}
-
 }

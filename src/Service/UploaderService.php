@@ -2,12 +2,13 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploaderService
 {
 	private $targetDirectory;
+
+	private $filename;
 
 	public function __construct($targetDirectory)
 	{
@@ -16,18 +17,13 @@ class UploaderService
 
 	public function upload(UploadedFile $file)
 	{
-		$fileName = 'csv_' . uniqid() . '.' . $file->guessExtension();
-		try {
-			$file->move($this->getTargetDirectory(), $fileName);
-		} catch (FileException $e) {
-
-		}
-
-		return $fileName;
+		$fileName = 'csv_' . uniqid() . '.'. $file->getClientOriginalExtension();
+		$file->move($this->targetDirectory, $fileName);
+		$this->filename = $fileName;
 	}
 
-	public function getTargetDirectory()
-	{
-		return $this->targetDirectory;
+	public function getFileName(){
+		return $this->filename;
 	}
+
 }
