@@ -7,6 +7,7 @@ namespace App\Tests\Service;
 use App\Repository\CsvRepository;
 use App\Service\CsvService;
 use App\Service\UploaderService;
+use League\Csv\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -46,7 +47,15 @@ class CsvServiceTest extends TestCase
 		$this->assertStringNotContainsString('.', $this->service->getTableName($file));
 	}
 
-
+	/**
+	 * @throws \League\Csv\Exception
+	 */
+	public function testParse()
+	{
+		$this->expectException(Exception::class);
+		$file = $this->service->getFileName();
+		$this->service->parse('directory', $file);
+	}
 
 	public function getFileName()
 	{
